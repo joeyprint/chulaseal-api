@@ -23,7 +23,7 @@ export class ItemsController {
   @Get()
   async findAll() {
     try {
-      const data = await this.itemsService.fetchData();
+      const data = await this.itemsService.getPublishedItem();
 
       return { data };
     } catch (error) {

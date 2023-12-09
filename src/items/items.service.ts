@@ -1,25 +1,55 @@
 import { Injectable } from '@nestjs/common';
 import axios from 'axios';
-// import { CreateItemDto } from './dto/create-item.dto';
-// import { UpdateItemDto } from './dto/update-item.dto';
 
 @Injectable()
 export class ItemsService {
   private readonly apiUrl = process.env.OMEKA_API_URL;
 
-  async fetchData(): Promise<any> {
+  getElementByName = (name: string, elements: any): string => {
+    const element = elements.find((element) => {
+      const topicName = element.element.name;
+      return name === topicName;
+    });
+
+    return element.text;
+  };
+
+  getPublishedItem = async (): Promise<any> => {
     try {
       console.log(this.apiUrl);
       const response = await axios.get(
         `https://www.chulaseal.com/field/api/items`,
       );
 
-      console.log({ data: response.data });
-      return await response.data;
+      const items = await response.data;
+
+      const newItems = [];
+
+      items.map((item: any) => {
+        const {
+          id,
+          public: published,
+          collection,
+          owner,
+          element_texts,
+        } = item;
+        console.log('published', published);
+        if (published) {
+          newItems.push({
+            id,
+            collection,
+            owner,
+            title: this.getElementByName('Title', element_texts),
+            description: this.getElementByName('Description', element_texts),
+          });
+        }
+      });
+
+      return newItems;
     } catch (error) {
       throw error;
     }
-  }
+  };
 
   // create(createItemDto: CreateItemDto) {
   //   return 'This action adds a new item';
