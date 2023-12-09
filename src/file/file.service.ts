@@ -1,26 +1,27 @@
 import { Injectable } from '@nestjs/common';
-import { CreateFileDto } from './dto/create-file.dto';
-import { UpdateFileDto } from './dto/update-file.dto';
+import axios from 'axios';
 
 @Injectable()
 export class FileService {
-  create(createFileDto: CreateFileDto) {
-    return 'This action adds a new file';
-  }
+  findOne = async (fileId: number) => {
+    try {
+      const response = await axios.get(
+        `https://www.chulaseal.com/field/api/files/${fileId}`,
+      );
 
-  findAll() {
-    return `This action returns all file`;
-  }
+      const file = await response.data;
 
-  findOne(id: number) {
-    return `This action returns a #${id} file`;
-  }
+      const { id, file_urls, original_filename, mime_type } = file;
+      const assetType = mime_type.split('/');
 
-  update(id: number, updateFileDto: UpdateFileDto) {
-    return `This action updates a #${id} file`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} file`;
-  }
+      return {
+        id,
+        url: file_urls.original,
+        name: original_filename,
+        type: assetType[assetType.length - 1],
+      };
+    } catch (error) {
+      throw error;
+    }
+  };
 }
