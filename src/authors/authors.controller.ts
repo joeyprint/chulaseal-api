@@ -15,8 +15,8 @@ export class AuthorsController {
     return this.authorsService.getFeaturedAuthors();
   }
 
-  // @Get(':id')
-  // findOne(@Param('id') id: string) {
-  //   return this.authorsService.findOne(+id);
-  // }
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    return this.authorsService.findOne(+id);
+  }
 }

@@ -79,7 +79,36 @@ export class AuthorsService {
     }
   };
 
-  findOne(id: number) {
-    return `This action returns a #${id} author`;
-  }
+  findOne = async (authorId: number): Promise<any> => {
+    try {
+      const response = await axios.get(
+        `https://www.chulaseal.com/field/api/collections/${authorId}`,
+      );
+
+      const author = await response.data;
+
+      const {
+        id,
+        public: isPublished,
+        featured: isFeatured,
+        element_texts,
+      } = author;
+
+      return {
+        id,
+        isPublished,
+        isFeatured,
+        title: ItemsService.getElementByName('Title', element_texts),
+        description: ItemsService.getElementByName(
+          'Description',
+          element_texts,
+        ),
+        publisher: ItemsService.getElementByName('Publisher', element_texts),
+        rights: ItemsService.getElementByName('Rights', element_texts),
+        identifier: ItemsService.getElementByName('Identifier', element_texts),
+      };
+    } catch (error) {
+      throw error;
+    }
+  };
 }
