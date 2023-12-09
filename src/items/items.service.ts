@@ -16,7 +16,6 @@ export class ItemsService {
 
   getPublishedItem = async (): Promise<any> => {
     try {
-      console.log(this.apiUrl);
       const response = await axios.get(
         `https://www.chulaseal.com/field/api/items`,
       );
@@ -28,13 +27,48 @@ export class ItemsService {
       items.map((item: any) => {
         const {
           id,
-          public: published,
+          public: isPublished,
           collection,
           owner,
           element_texts,
         } = item;
-        console.log('published', published);
-        if (published) {
+        if (isPublished) {
+          newItems.push({
+            id,
+            collection,
+            owner,
+            title: this.getElementByName('Title', element_texts),
+            description: this.getElementByName('Description', element_texts),
+          });
+        }
+      });
+
+      return newItems;
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  getFeaturedItem = async (): Promise<any> => {
+    try {
+      const response = await axios.get(
+        `https://www.chulaseal.com/field/api/items`,
+      );
+
+      const items = await response.data;
+
+      const newItems = [];
+
+      items.map((item: any) => {
+        const {
+          id,
+          public: isPublished,
+          featured: isFeatured,
+          collection,
+          owner,
+          element_texts,
+        } = item;
+        if (isPublished && isFeatured) {
           newItems.push({
             id,
             collection,
@@ -59,9 +93,36 @@ export class ItemsService {
   //   return `This action returns all items`;
   // }
 
-  // findOne(id: number) {
-  //   return `This action returns a #${id} item`;
-  // }
+  findOne = async (itemId: number): Promise<any> => {
+    try {
+      const response = await axios.get(
+        `https://www.chulaseal.com/field/api/items/${itemId}`,
+      );
+
+      const item = await response.data;
+
+      const {
+        id,
+        public: isPublished,
+        featured: isFeatured,
+        collection,
+        owner,
+        element_texts,
+      } = item;
+
+      return {
+        id,
+        isPublished,
+        isFeatured,
+        collection,
+        owner,
+        title: this.getElementByName('Title', element_texts),
+        description: this.getElementByName('Description', element_texts),
+      };
+    } catch (error) {
+      throw error;
+    }
+  };
 
   // update(id: number, updateItemDto: UpdateItemDto) {
   //   return `This action updates a #${id} item`;
