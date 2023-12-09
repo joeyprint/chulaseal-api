@@ -5,7 +5,7 @@ import axios from 'axios';
 export class ItemsService {
   private readonly apiUrl = process.env.OMEKA_API_URL;
 
-  getElementByName = (name: string, elements: any): string => {
+  static getElementByName = (name: string, elements: any): string => {
     const element = elements.find((element) => {
       const topicName = element.element.name;
       return name === topicName;
@@ -37,8 +37,11 @@ export class ItemsService {
             id,
             collection,
             owner,
-            title: this.getElementByName('Title', element_texts),
-            description: this.getElementByName('Description', element_texts),
+            title: ItemsService.getElementByName('Title', element_texts),
+            description: ItemsService.getElementByName(
+              'Description',
+              element_texts,
+            ),
           });
         }
       });
@@ -73,8 +76,11 @@ export class ItemsService {
             id,
             collection,
             owner,
-            title: this.getElementByName('Title', element_texts),
-            description: this.getElementByName('Description', element_texts),
+            title: ItemsService.getElementByName('Title', element_texts),
+            description: ItemsService.getElementByName(
+              'Description',
+              element_texts,
+            ),
           });
         }
       });
@@ -116,8 +122,11 @@ export class ItemsService {
         isFeatured,
         collection,
         owner,
-        title: this.getElementByName('Title', element_texts),
-        description: this.getElementByName('Description', element_texts),
+        title: ItemsService.getElementByName('Title', element_texts),
+        description: ItemsService.getElementByName(
+          'Description',
+          element_texts,
+        ),
       };
     } catch (error) {
       throw error;

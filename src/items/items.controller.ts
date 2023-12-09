@@ -6,23 +6,13 @@ export class ItemsController {
   constructor(private readonly itemsService: ItemsService) {}
 
   @Get()
-  async findAll() {
-    try {
-      const data = await this.itemsService.getPublishedItem();
-      return { data };
-    } catch (error) {
-      return { error: error.message };
-    }
+  findAll() {
+    return this.itemsService.getPublishedItem();
   }
 
   @Get('/featured')
-  async findFeatured() {
-    try {
-      const data = await this.itemsService.getFeaturedItem();
-      return { data };
-    } catch (error) {
-      return { error: error.message };
-    }
+  findFeatured() {
+    return this.itemsService.getFeaturedItem();
   }
 
   @Get(':id')
