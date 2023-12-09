@@ -1,8 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import axios from 'axios';
+import { AuthorsService } from 'src/authors/authors.service';
 
 @Injectable()
 export class ItemsService {
+  constructor(private readonly authorsService: AuthorsService) {}
   private readonly apiUrl = process.env.OMEKA_API_URL;
 
   static getElementByName = (name: string, elements: any): string => {
@@ -22,29 +24,25 @@ export class ItemsService {
 
       const items = await response.data;
 
-      const newItems = [];
+      const newItemsPromises = items
+        .filter((item) => item.public)
+        .map(async (item: any) => {
+          const { id, collection, element_texts } = item;
 
-      items.map((item: any) => {
-        const {
-          id,
-          public: isPublished,
-          collection,
-          owner,
-          element_texts,
-        } = item;
-        if (isPublished) {
-          newItems.push({
+          const author = await this.authorsService.findOne(collection.id);
+
+          return {
             id,
-            collection,
-            owner,
+            collection: { ...author },
             title: ItemsService.getElementByName('Title', element_texts),
             description: ItemsService.getElementByName(
               'Description',
               element_texts,
             ),
-          });
-        }
-      });
+          };
+        });
+
+      const newItems = await Promise.all(newItemsPromises);
 
       return newItems;
     } catch (error) {
@@ -55,49 +53,35 @@ export class ItemsService {
   getFeaturedItem = async (): Promise<any> => {
     try {
       const response = await axios.get(
-        `https://www.chulaseal.com/field/api/items`,
+        'https://www.chulaseal.com/field/api/items',
       );
+      const items = response.data;
 
-      const items = await response.data;
+      const newItemsPromises = items
+        .filter((item: any) => item.public && item.featured)
+        .map(async (item: any) => {
+          const { id, collection, element_texts } = item;
 
-      const newItems = [];
+          const author = await this.authorsService.findOne(collection.id);
 
-      items.map((item: any) => {
-        const {
-          id,
-          public: isPublished,
-          featured: isFeatured,
-          collection,
-          owner,
-          element_texts,
-        } = item;
-        if (isPublished && isFeatured) {
-          newItems.push({
+          return {
             id,
-            collection,
-            owner,
+            collection: { ...author },
             title: ItemsService.getElementByName('Title', element_texts),
             description: ItemsService.getElementByName(
               'Description',
               element_texts,
             ),
-          });
-        }
-      });
+          };
+        });
+
+      const newItems = await Promise.all(newItemsPromises);
 
       return newItems;
     } catch (error) {
       throw error;
     }
   };
-
-  // create(createItemDto: CreateItemDto) {
-  //   return 'This action adds a new item';
-  // }
-
-  // findAll() {
-  //   return `This action returns all items`;
-  // }
 
   findOne = async (itemId: number): Promise<any> => {
     try {
@@ -112,16 +96,16 @@ export class ItemsService {
         public: isPublished,
         featured: isFeatured,
         collection,
-        owner,
         element_texts,
       } = item;
+
+      const author = await this.authorsService.findOne(collection.id);
 
       return {
         id,
         isPublished,
         isFeatured,
-        collection,
-        owner,
+        collection: { ...author },
         title: ItemsService.getElementByName('Title', element_texts),
         description: ItemsService.getElementByName(
           'Description',
@@ -132,12 +116,4 @@ export class ItemsService {
       throw error;
     }
   };
-
-  // update(id: number, updateItemDto: UpdateItemDto) {
-  //   return `This action updates a #${id} item`;
-  // }
-
-  // remove(id: number) {
-  //   return `This action removes a #${id} item`;
-  // }
 }
