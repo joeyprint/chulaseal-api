@@ -9,4 +9,9 @@ export class FileController {
   findOne(@Param('id') id: string) {
     return this.fileService.findOne(+id);
   }
+
+  @Get('/item/:itemId')
+  findByItem(@Param('itemId') itemId: string) {
+    return this.fileService.findByItem(+itemId);
+  }
 }
