@@ -1,10 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import axios from 'axios';
 import { AuthorsService } from 'src/authors/authors.service';
+import { FileService } from 'src/file/file.service';
 
 @Injectable()
 export class ItemsService {
-  constructor(private readonly authorsService: AuthorsService) {}
+  constructor(
+    private readonly authorsService: AuthorsService,
+    private readonly fileService: FileService,
+  ) {}
+
   private readonly apiUrl = process.env.OMEKA_API_URL;
 
   static getElementByName = (name: string, elements: any): string => {
@@ -100,12 +105,14 @@ export class ItemsService {
       } = item;
 
       const author = await this.authorsService.findOne(collection.id);
+      const fileList = await this.fileService.findByItem(id);
 
       return {
         id,
         isPublished,
         isFeatured,
         collection: { ...author },
+        files: fileList,
         title: ItemsService.getElementByName('Title', element_texts),
         description: ItemsService.getElementByName(
           'Description',
