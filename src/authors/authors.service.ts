@@ -5,14 +5,6 @@ import { ItemsService } from 'src/items/items.service';
 
 @Injectable()
 export class AuthorsService {
-  // create(createAuthorDto: CreateAuthorDto) {
-  //   return 'This action adds a new author';
-  // }
-
-  // findAll() {
-  //   return `This action returns all authors`;
-  // }
-
   getPublishedAuthors = async (): Promise<any> => {
     try {
       const response = await axios.get(
