@@ -1,26 +1,24 @@
 import { Injectable } from '@nestjs/common';
-import { CreateTagDto } from './dto/create-tag.dto';
-import { UpdateTagDto } from './dto/update-tag.dto';
+import { ConfigService } from '@nestjs/config';
+import axios from 'axios';
 
 @Injectable()
 export class TagsService {
-  create(createTagDto: CreateTagDto) {
-    return 'This action adds a new tag';
-  }
+  constructor(private configService: ConfigService) {}
 
-  findAll() {
-    return `This action returns all tags`;
-  }
+  private readonly apiUrl = this.configService.get<string>('OMEKA_API_URL');
 
-  findOne(id: number) {
-    return `This action returns a #${id} tag`;
-  }
+  findOne = async (tagId: number) => {
+    try {
+      const response = await axios.get(`${this.apiUrl}/tags/${tagId}`);
 
-  update(id: number, updateTagDto: UpdateTagDto) {
-    return `This action updates a #${id} tag`;
-  }
+      const tag = await response.data;
 
-  remove(id: number) {
-    return `This action removes a #${id} tag`;
-  }
+      const { id, name } = tag;
+
+      return { id, name };
+    } catch (error) {
+      throw error;
+    }
+  };
 }
