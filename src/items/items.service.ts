@@ -1,13 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import axios from 'axios';
+
 import { AuthorsService } from 'src/authors/authors.service';
 import { FileService } from 'src/file/file.service';
+import { TagsService } from 'src/tags/tags.service';
 
 @Injectable()
 export class ItemsService {
   constructor(
     private readonly authorsService: AuthorsService,
+    private readonly tagsService: TagsService,
     private readonly fileService: FileService,
     private configService: ConfigService,
   ) {}
@@ -21,6 +24,16 @@ export class ItemsService {
     });
 
     return element.text;
+  };
+
+  getTags = async (originalTags: any) => {
+    const tagsPromises = originalTags.map(async (tag) => {
+      return await this.tagsService.findOne(tag.id);
+    });
+
+    const tags = await Promise.all(tagsPromises);
+
+    return tags;
   };
 
   getPublishedItem = async (): Promise<any> => {
@@ -97,10 +110,12 @@ export class ItemsService {
         featured: isFeatured,
         collection,
         element_texts,
+        tags,
       } = item;
 
       const author = await this.authorsService.findOne(collection.id);
       const fileList = await this.fileService.findByItem(id);
+      const tagList = await this.getTags(tags);
 
       return {
         id,
@@ -113,6 +128,7 @@ export class ItemsService {
           'Description',
           element_texts,
         ),
+        tags: tagList,
       };
     } catch (error) {
       throw error;
