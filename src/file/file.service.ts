@@ -1,13 +1,16 @@
 import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import axios from 'axios';
 
 @Injectable()
 export class FileService {
+  constructor(private configService: ConfigService) {}
+
+  private readonly apiUrl = this.configService.get('OMEKA_API_URL');
+
   findOne = async (fileId: number) => {
     try {
-      const response = await axios.get(
-        `https://www.chulaseal.com/field/api/files/${fileId}`,
-      );
+      const response = await axios.get(`${this.apiUrl}/files/${fileId}`);
 
       const file = await response.data;
 
@@ -27,9 +30,7 @@ export class FileService {
 
   findByItem = async (itemId: number) => {
     try {
-      const response = await axios.get(
-        `https://www.chulaseal.com/field/api/files?item=${itemId}`,
-      );
+      const response = await axios.get(`${this.apiUrl}/files?item=${itemId}`);
 
       const files = await response.data;
 

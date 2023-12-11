@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import axios from 'axios';
 import { AuthorsService } from 'src/authors/authors.service';
 import { FileService } from 'src/file/file.service';
@@ -8,9 +9,10 @@ export class ItemsService {
   constructor(
     private readonly authorsService: AuthorsService,
     private readonly fileService: FileService,
+    private configService: ConfigService,
   ) {}
 
-  private readonly apiUrl = process.env.OMEKA_API_URL;
+  private readonly apiUrl = this.configService.get('OMEKA_API_URL');
 
   static getElementByName = (name: string, elements: any): string => {
     const element = elements.find((element) => {

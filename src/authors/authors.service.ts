@@ -1,15 +1,18 @@
 import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import axios from 'axios';
 
 import { ItemsService } from 'src/items/items.service';
 
 @Injectable()
 export class AuthorsService {
+  constructor(private configService: ConfigService) {}
+
+  private readonly apiUrl = this.configService.get('OMEKA_API_URL');
+
   getPublishedAuthors = async (): Promise<any> => {
     try {
-      const response = await axios.get(
-        `https://www.chulaseal.com/field/api/collections`,
-      );
+      const response = await axios.get(`${this.apiUrl}/collections`);
 
       const authors = await response.data;
 
@@ -37,9 +40,7 @@ export class AuthorsService {
 
   getFeaturedAuthors = async (): Promise<any> => {
     try {
-      const response = await axios.get(
-        `https://www.chulaseal.com/field/api/collections`,
-      );
+      const response = await axios.get(`${this.apiUrl}/collections`);
 
       const authors = await response.data;
 
@@ -74,7 +75,7 @@ export class AuthorsService {
   findOne = async (authorId: number): Promise<any> => {
     try {
       const response = await axios.get(
-        `https://www.chulaseal.com/field/api/collections/${authorId}`,
+        `${this.apiUrl}/collections/${authorId}`,
       );
 
       const author = await response.data;
