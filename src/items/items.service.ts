@@ -23,10 +23,7 @@ export class ItemsService {
 
   getPublishedItem = async (): Promise<any> => {
     try {
-      const response = await axios.get(
-        `https://www.chulaseal.com/field/api/items`,
-      );
-
+      const response = await axios.get(`${this.apiUrl}/items`);
       const items = await response.data;
 
       const newItemsPromises = items
@@ -57,9 +54,7 @@ export class ItemsService {
 
   getFeaturedItem = async (): Promise<any> => {
     try {
-      const response = await axios.get(
-        'https://www.chulaseal.com/field/api/items',
-      );
+      const response = await axios.get(`${this.apiUrl}/items`);
       const items = response.data;
 
       const newItemsPromises = items
@@ -90,9 +85,7 @@ export class ItemsService {
 
   findOne = async (itemId: number): Promise<any> => {
     try {
-      const response = await axios.get(
-        `https://www.chulaseal.com/field/api/items/${itemId}`,
-      );
+      const response = await axios.get(`${this.apiUrl}/items/${itemId}`);
 
       const item = await response.data;
 
