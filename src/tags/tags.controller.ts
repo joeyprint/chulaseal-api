@@ -5,6 +5,11 @@ import { TagsService } from './tags.service';
 export class TagsController {
   constructor(private readonly tagsService: TagsService) {}
 
+  @Get()
+  findAll() {
+    return this.tagsService.findAll();
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.tagsService.findOne(+id);
