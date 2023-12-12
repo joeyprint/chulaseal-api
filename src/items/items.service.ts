@@ -50,7 +50,11 @@ export class ItemsService {
 
           return {
             id,
-            collection: { ...author },
+            collection: {
+              id: author.id,
+              title: author.title,
+              description: author.description,
+            },
             title: ItemsService.getElementByName('Title', element_texts),
             description: ItemsService.getElementByName(
               'Description',
@@ -81,7 +85,11 @@ export class ItemsService {
 
           return {
             id,
-            collection: { ...author },
+            collection: {
+              id: author.id,
+              title: author.title,
+              description: author.description,
+            },
             title: ItemsService.getElementByName('Title', element_texts),
             description: ItemsService.getElementByName(
               'Description',
