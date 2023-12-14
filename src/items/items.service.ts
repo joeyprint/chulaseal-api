@@ -148,6 +148,19 @@ export class ItemsService {
           element_texts,
         ),
         tags: tagList,
+        source: ItemsService.getElementByName('Source', element_texts),
+        rightHolder: ItemsService.getElementByName(
+          'Rights Holder',
+          element_texts,
+        ),
+        accrualMethod: ItemsService.getElementByName(
+          'Accrual Method',
+          element_texts,
+        ),
+        originalFormat: ItemsService.getElementByName(
+          'Original Format',
+          element_texts,
+        ),
       };
     } catch (error) {
       throw error;
