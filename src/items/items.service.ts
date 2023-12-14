@@ -23,12 +23,17 @@ export class ItemsService {
   private readonly apiUrl = this.configService.get('OMEKA_API_URL');
 
   static getElementByName = (name: string, elements: any): string => {
-    const element = elements.find((element) => {
+    const items = elements.filter((element) => {
       const topicName = element.element.name;
       return name === topicName;
     });
 
-    return element.text;
+    if (items.length === 0) return;
+    if (items.length === 1) {
+      return items[0].text;
+    }
+
+    return items.map((item) => item.text);
   };
 
   getTags = async (originalTags: any) => {
@@ -127,12 +132,10 @@ export class ItemsService {
         id,
         public: isPublished,
         featured: isFeatured,
-        collection,
         element_texts,
         tags,
       } = item;
 
-      const author = await this.authorsService.findOne(collection.id);
       const fileList = await this.fileService.findByItem(id);
       const tagList = await this.getTags(tags);
 
@@ -140,27 +143,37 @@ export class ItemsService {
         id,
         isPublished,
         isFeatured,
-        collection: { ...author },
         files: fileList,
         title: ItemsService.getElementByName('Title', element_texts),
         description: ItemsService.getElementByName(
           'Description',
           element_texts,
         ),
-        tags: tagList,
-        source: ItemsService.getElementByName('Source', element_texts),
-        rightHolder: ItemsService.getElementByName(
-          'Rights Holder',
-          element_texts,
-        ),
-        accrualMethod: ItemsService.getElementByName(
-          'Accrual Method',
-          element_texts,
-        ),
+        creator: ItemsService.getElementByName('Creator', element_texts),
         originalFormat: ItemsService.getElementByName(
           'Original Format',
           element_texts,
         ),
+        source: ItemsService.getElementByName('Source', element_texts),
+        researchDate: ItemsService.getElementByName('Date', element_texts),
+        location: ItemsService.getElementByName('Coverage', element_texts),
+        accrualMethod: ItemsService.getElementByName(
+          'Accrual Method',
+          element_texts,
+        ),
+        publisher: ItemsService.getElementByName('Publisher', element_texts),
+        rights: ItemsService.getElementByName('Rights', element_texts),
+        rightHolder: ItemsService.getElementByName(
+          'Rights Holder',
+          element_texts,
+        ),
+        subjects: ItemsService.getElementByName('Subject', element_texts),
+        languages: ItemsService.getElementByName('Language', element_texts),
+        subcollection: ItemsService.getElementByName(
+          'Is Part Of',
+          element_texts,
+        ),
+        tags: tagList,
       };
     } catch (error) {
       throw error;
