@@ -6,6 +6,8 @@ async function bootstrap() {
 
   app.enableCors({
     origin: ['http://localhost:3000', 'https://chulaseal.staging.wasin.dev'],
+    allowedHeaders: '*',
+    credentials: true,
   });
 
   await app.listen(3001);
