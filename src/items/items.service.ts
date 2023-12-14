@@ -6,6 +6,11 @@ import { AuthorsService } from 'src/authors/authors.service';
 import { FileService } from 'src/file/file.service';
 import { TagsService } from 'src/tags/tags.service';
 
+type QueryPagination = {
+  page: number;
+  limit: number;
+};
+
 @Injectable()
 export class ItemsService {
   constructor(
@@ -36,9 +41,12 @@ export class ItemsService {
     return tags;
   };
 
-  getPublishedItem = async (): Promise<any> => {
+  getPublishedItem = async (pagination: QueryPagination): Promise<any> => {
     try {
-      const response = await axios.get(`${this.apiUrl}/items`);
+      const { page = 1, limit = 10 } = pagination;
+      const response = await axios.get(
+        `${this.apiUrl}/items?page=${page}&per_page=${limit}&sort_field=modified&sort_dir=desc`,
+      );
       const items = await response.data;
 
       const newItemsPromises = items
@@ -71,9 +79,12 @@ export class ItemsService {
     }
   };
 
-  getFeaturedItem = async (): Promise<any> => {
+  getFeaturedItem = async (pagination: QueryPagination): Promise<any> => {
     try {
-      const response = await axios.get(`${this.apiUrl}/items`);
+      const { page = 1, limit = 10 } = pagination;
+      const response = await axios.get(
+        `${this.apiUrl}/items?page=${page}&per_page=${limit}&sort_field=modified&sort_dir=desc`,
+      );
       const items = response.data;
 
       const newItemsPromises = items
