@@ -4,12 +4,9 @@ import axios from 'axios';
 
 import { AuthorsService } from 'src/authors/authors.service';
 import { FileService } from 'src/file/file.service';
+import { GeolocationService } from 'src/geolocation/geolocation.service';
 import { TagsService } from 'src/tags/tags.service';
-
-type QueryPagination = {
-  page: number;
-  limit: number;
-};
+import { QueryPagination } from 'src/utils/pagination';
 
 @Injectable()
 export class ItemsService {
@@ -17,6 +14,7 @@ export class ItemsService {
     private readonly authorsService: AuthorsService,
     private readonly tagsService: TagsService,
     private readonly fileService: FileService,
+    private readonly geolocationService: GeolocationService,
     private configService: ConfigService,
   ) {}
 
@@ -133,11 +131,15 @@ export class ItemsService {
         public: isPublished,
         featured: isFeatured,
         element_texts,
+        extended_resources: { geolocations },
         tags,
       } = item;
 
       const fileList = await this.fileService.findByItem(id);
       const tagList = await this.getTags(tags);
+      const geolocation = await this.geolocationService.findOne(
+        geolocations.id,
+      );
 
       return {
         id,
@@ -156,7 +158,10 @@ export class ItemsService {
         ),
         source: ItemsService.getElementByName('Source', element_texts),
         researchDate: ItemsService.getElementByName('Date', element_texts),
-        location: ItemsService.getElementByName('Coverage', element_texts),
+        location: {
+          name: ItemsService.getElementByName('Coverage', element_texts),
+          ...geolocation,
+        },
         accrualMethod: ItemsService.getElementByName(
           'Accrual Method',
           element_texts,

@@ -7,6 +7,7 @@ import { ItemsController } from './items.controller';
 import { AuthorsService } from 'src/authors/authors.service';
 import { FileService } from 'src/file/file.service';
 import { TagsService } from 'src/tags/tags.service';
+import { GeolocationService } from 'src/geolocation/geolocation.service';
 
 @Module({
   controllers: [ItemsController],
@@ -16,6 +17,7 @@ import { TagsService } from 'src/tags/tags.service';
     FileService,
     TagsService,
     ConfigService,
+    GeolocationService,
   ],
 })
 export class ItemsModule {}
