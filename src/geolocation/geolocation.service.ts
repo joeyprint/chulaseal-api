@@ -1,26 +1,58 @@
 import { Injectable } from '@nestjs/common';
-import { CreateGeolocationDto } from './dto/create-geolocation.dto';
-import { UpdateGeolocationDto } from './dto/update-geolocation.dto';
+import { ConfigService } from '@nestjs/config';
+import axios from 'axios';
+
+import { QueryPagination } from 'src/utils/pagination';
 
 @Injectable()
 export class GeolocationService {
-  create(createGeolocationDto: CreateGeolocationDto) {
-    return 'This action adds a new geolocation';
-  }
+  constructor(private configService: ConfigService) {}
 
-  findAll() {
-    return `This action returns all geolocation`;
-  }
+  private readonly apiUrl = this.configService.get('OMEKA_API_URL');
 
-  findOne(id: number) {
-    return `This action returns a #${id} geolocation`;
-  }
+  findAll = async (pagination: QueryPagination) => {
+    try {
+      const { page = 1, limit = 10 } = pagination;
+      const response = await axios.get(
+        `${this.apiUrl}/geolocations?page=${page}&per_page=${limit}`,
+      );
 
-  update(id: number, updateGeolocationDto: UpdateGeolocationDto) {
-    return `This action updates a #${id} geolocation`;
-  }
+      const geolocationList = await response.data;
 
-  remove(id: number) {
-    return `This action removes a #${id} geolocation`;
-  }
+      return geolocationList.map((location) => {
+        const { id, latitude, longitude, zoom_level, item } = location;
+
+        return {
+          id,
+          latitude,
+          longitude,
+          zoomLevel: zoom_level,
+          item: { id: item.id },
+        };
+      });
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  findOne = async (locationId: number) => {
+    try {
+      const response = await axios.get(
+        `${this.apiUrl}/geolocations/${locationId}`,
+      );
+
+      const geolocation = await response.data;
+
+      const { id, latitude, longitude, zoom_level } = geolocation;
+
+      return {
+        id,
+        latitude,
+        longitude,
+        zoomLevel: zoom_level,
+      };
+    } catch (error) {
+      throw error;
+    }
+  };
 }
