@@ -137,9 +137,10 @@ export class ItemsService {
 
       const fileList = await this.fileService.findByItem(id);
       const tagList = await this.getTags(tags);
-      const geolocation = await this.geolocationService.findOne(
-        geolocations.id,
-      );
+      // If has geolocation values
+      const geolocation =
+        geolocations &&
+        (await this.geolocationService.findOne(geolocations.id));
 
       return {
         id,
