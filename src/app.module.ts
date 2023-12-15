@@ -7,6 +7,7 @@ import { ItemsModule } from './items/items.module';
 import { AuthorsModule } from './authors/authors.module';
 import { FileModule } from './file/file.module';
 import { TagsModule } from './tags/tags.module';
+import { GeolocationModule } from './geolocation/geolocation.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { TagsModule } from './tags/tags.module';
     AuthorsModule,
     FileModule,
     TagsModule,
+    GeolocationModule,
   ],
   controllers: [AppController],
   providers: [AppService],
