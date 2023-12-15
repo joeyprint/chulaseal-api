@@ -137,7 +137,12 @@ export class ItemsService {
 
       const fileList = await this.fileService.findByItem(id);
       const tagList = await this.getTags(tags);
+
       // If has geolocation values
+      const locationName = ItemsService.getElementByName(
+        'Coverage',
+        element_texts,
+      );
       const geolocation =
         geolocations &&
         (await this.geolocationService.findOne(geolocations.id));
@@ -159,8 +164,8 @@ export class ItemsService {
         ),
         source: ItemsService.getElementByName('Source', element_texts),
         researchDate: ItemsService.getElementByName('Date', element_texts),
-        location: {
-          name: ItemsService.getElementByName('Coverage', element_texts),
+        location: locationName && {
+          name: locationName,
           ...geolocation,
         },
         accrualMethod: ItemsService.getElementByName(
