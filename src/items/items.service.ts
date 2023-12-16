@@ -55,9 +55,14 @@ export class ItemsService {
       const newItemsPromises = items
         .filter((item) => item.public)
         .map(async (item: any) => {
-          const { id, collection, element_texts } = item;
+          const { id, collection, element_texts, tags } = item;
 
+          const tagList = await this.getTags(tags);
           const author = await this.authorsService.findOne(collection.id);
+          const locationName = ItemsService.getElementByName(
+            'Coverage',
+            element_texts,
+          );
 
           return {
             id,
@@ -71,6 +76,8 @@ export class ItemsService {
               'Description',
               element_texts,
             ),
+            location: locationName && { name: locationName },
+            tags: tagList,
           };
         });
 
